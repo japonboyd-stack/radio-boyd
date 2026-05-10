@@ -3,46 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Boyd | FINAL VERSION PRO</title>
+    <title>Radio Boyd | FINAL VIDEO VERSION</title>
     <style>
         :root {
             --bg-dark: #050508;
             --surface: rgba(255, 255, 255, 0.03);
-            --surface-border: rgba(255, 255, 255, 0.1);
+            --surface-border: rgba(255, 255, 255, 0.15);
             --text-primary: #ffffff;
             --fm-color: #00ff88;
-            --fm-glow: rgba(0, 255, 136, 0.3);
+            --fm-glow: rgba(0, 255, 136, 0.4);
             --am-color: #ff9d00;
-            --am-glow: rgba(255, 157, 0, 0.3);
+            --am-glow: rgba(255, 157, 0, 0.4);
             --active-color: var(--fm-color);
             --active-glow: var(--fm-glow);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        .glow-bg { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, var(--active-glow) 0%, transparent 40%); z-index: -1; }
-        .app-container { width: 95vw; height: 90vh; max-height: 850px; background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(30px); border: 2px solid var(--surface-border); border-radius: 40px; display: grid; grid-template-rows: auto 1fr auto; padding: 40px; box-shadow: 0 50px 100px rgba(0,0,0,0.8); overflow: hidden; }
-        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--surface-border); }
-        .main-logo { height: 160px; filter: drop-shadow(0 0 30px var(--active-glow)); transition: 0.5s; }
-        .header-meta { text-align: right; }
-        main { display: grid; grid-template-columns: 1fr 380px; gap: 30px; padding: 30px 0; overflow: hidden; }
-        .broadcast-panel { background: var(--surface); border-radius: 30px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; border: 1px solid var(--surface-border); }
-        .station-toggle { position: absolute; top: 25px; left: 25px; display: flex; background: rgba(255,255,255,0.05); border-radius: 12px; padding: 4px; }
-        .toggle-btn { background: transparent; border: none; color: #666; padding: 10px 20px; cursor: pointer; border-radius: 8px; font-weight: bold; font-family: 'Orbitron'; }
-        .toggle-btn.active { background: var(--active-color); color: #000; box-shadow: 0 0 15px var(--active-glow); }
-        .station-info h1 { font-size: 110px; color: var(--active-color); text-shadow: 0 0 30px var(--active-glow); text-align: center; font-family: 'Orbitron'; }
-        .station-info span { display: block; text-align: center; font-size: 14px; color: #666; letter-spacing: 5px; }
-        .ads-panel { background: var(--surface); border-radius: 30px; padding: 25px; overflow-y: auto; border: 1px solid var(--surface-border); }
-        .station-item { padding: 18px; background: rgba(255,255,255,0.04); border-radius: 15px; margin-bottom: 12px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
-        .station-item:hover { border-color: var(--active-color); background: rgba(255,255,255,0.08); }
-        .station-name { font-weight: bold; font-size: 16px; }
-        .bars { display: flex; gap: 5px; align-items: flex-end; height: 110px; margin-top: 30px; }
-        .bar { width: 8px; background: var(--active-color); border-radius: 4px; box-shadow: 0 0 15px var(--active-glow); transition: height 0.1s; }
-        footer { padding-top: 25px; border-top: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center; }
-        .control-btn { width: 80px; height: 80px; border-radius: 50%; background: var(--active-color); border: none; font-size: 32px; cursor: pointer; box-shadow: 0 0 30px var(--active-glow); }
-        .crackling-noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; background: url('https://media.giphy.com/media/oEI9uWUiclsRTlA8Is/giphy.gif'); mix-blend-mode: overlay; }
-        body.theme-am .crackling-noise { opacity: 0.08; }
+        .glow-bg { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, var(--active-glow) 0%, transparent 40%); z-index: -1; transition: 0.8s; }
+        .app-container { width: 95vw; height: 90vh; max-height: 850px; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(40px); border: 2px solid var(--surface-border); border-radius: 40px; display: grid; grid-template-rows: auto 1fr auto; padding: 40px; box-shadow: 0 50px 150px rgba(0,0,0,1); overflow: hidden; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 30px; border-bottom: 1px solid var(--surface-border); }
+        .main-logo { height: 180px; filter: drop-shadow(0 0 40px var(--active-glow)); transition: 0.5s; }
+        .header-meta { text-align: right; font-family: 'Orbitron', sans-serif; }
+        main { display: grid; grid-template-columns: 1fr 400px; gap: 40px; padding: 30px 0; overflow: hidden; }
+        .broadcast-panel { background: var(--surface); border-radius: 35px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; border: 1px solid var(--surface-border); }
+        .station-toggle { position: absolute; top: 30px; left: 30px; display: flex; background: rgba(255,255,255,0.05); border-radius: 15px; padding: 5px; }
+        .toggle-btn { background: transparent; border: none; color: #555; padding: 12px 25px; cursor: pointer; border-radius: 10px; font-weight: 900; font-family: 'Orbitron'; font-size: 14px; }
+        .toggle-btn.active { background: var(--active-color); color: #000; box-shadow: 0 0 20px var(--active-glow); }
+        .station-info h1 { font-size: 130px; color: var(--active-color); text-shadow: 0 0 40px var(--active-glow); text-align: center; font-family: 'Orbitron'; letter-spacing: -5px; }
+        .station-info span { display: block; text-align: center; font-size: 14px; color: #fff; opacity: 0.4; letter-spacing: 8px; text-transform: uppercase; }
+        .ads-panel { background: var(--surface); border-radius: 35px; padding: 30px; overflow-y: auto; border: 1px solid var(--surface-border); }
+        .station-item { padding: 20px; background: rgba(255,255,255,0.05); border-radius: 18px; margin-bottom: 15px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
+        .station-item:hover { border-color: var(--active-color); background: rgba(255,255,255,0.1); transform: scale(1.02); }
+        .station-name { font-weight: 800; font-size: 18px; color: var(--active-color); }
+        .bars { display: flex; gap: 6px; align-items: flex-end; height: 130px; margin-top: 40px; }
+        .bar { width: 10px; background: var(--active-color); border-radius: 5px; box-shadow: 0 0 20px var(--active-glow); }
+        footer { padding-top: 30px; border-top: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center; }
+        .control-btn { width: 90px; height: 90px; border-radius: 50%; background: var(--active-color); border: none; font-size: 36px; cursor: pointer; box-shadow: 0 0 40px var(--active-glow); transition: 0.2s; display: flex; align-items: center; justify-content: center; }
+        .control-btn:hover { transform: scale(1.1); }
+        .crackling-noise { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; background: url('https://media.giphy.com/media/oEI9uWUiclsRTlA8Is/giphy.gif'); mix-blend-mode: overlay; transition: 0.5s; }
+        body.theme-am .crackling-noise { opacity: 0.1; }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
 </head>
 <body class="theme-fm">
     <div class="glow-bg"></div>
@@ -51,8 +52,8 @@
         <header>
             <img src="assets/logo.png" class="main-logo" alt="Logo">
             <div class="header-meta">
-                <div id="current-time" style="font-family: 'Orbitron'; font-size: 28px; color: var(--active-color);">00:00:00</div>
-                <div style="font-size: 12px; opacity: 0.5; letter-spacing: 2px;">SAT SIGNAL: OPTIMAL</div>
+                <div id="current-time" style="font-size: 36px; color: var(--active-color);">00:00:00</div>
+                <div style="font-size: 14px; opacity: 0.6; letter-spacing: 3px;">SIGNAL: 100% SAT</div>
             </div>
         </header>
         <main>
@@ -63,25 +64,23 @@
                 </div>
                 <div class="station-info">
                     <h1 id="freq-display">104.5</h1>
-                    <span id="station-label">FM STEREO • DIGITAL MASTER</span>
+                    <span id="station-label">FM STEREO • HIGH FIDELITY</span>
                 </div>
                 <div class="bars" id="visualizer"></div>
             </section>
             <section class="ads-panel">
-                <h2 style="font-size: 12px; margin-bottom: 20px; letter-spacing: 2px; color: var(--active-color);">SINTONIZADOR GLOBAL</h2>
-                <div id="stations-list">
-                    <!-- Las estaciones se cargan aquí automáticamente -->
-                </div>
+                <h2 style="font-size: 14px; margin-bottom: 25px; letter-spacing: 3px; color: var(--active-color);">ESTACIONES PREMIUM</h2>
+                <div id="stations-list"></div>
             </section>
         </main>
         <footer>
-            <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 30px;">
                 <button id="play-btn" class="control-btn">▶</button>
-                <div><b style="font-size: 20px; letter-spacing: 1px;">RADIO BOYD</b><br><span style="font-size: 11px; opacity: 0.6;">ELITE BROADCASTING SUITE</span></div>
+                <div><b style="font-size: 24px;">RADIO BOYD</b><br><span style="font-size: 12px; opacity: 0.5; letter-spacing: 2px;">GLOBAL BROADCASTING</span></div>
             </div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="font-size: 12px; opacity: 0.5;">VOL</span>
-                <input type="range" id="volume-slider" min="0" max="100" value="80" style="width: 200px; accent-color: var(--active-color);">
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span style="font-size: 14px; opacity: 0.6;">VOL</span>
+                <input type="range" id="volume-slider" min="0" max="100" value="80" style="width: 250px; accent-color: var(--active-color);">
             </div>
         </footer>
     </div>
@@ -102,21 +101,19 @@
             const stationAudio = new Audio();
             stationAudio.crossOrigin = "anonymous";
 
-            // ESTACIONES DE RESPALDO (SIEMPRE DISPONIBLES)
-            const EMERGENCY_STATIONS = [
-                { name: "Sintonía España", url: "https://rtve-r3.rtve.es/resources/audio/mp3/4/2/1445417646224.mp3" },
-                { name: "México FM HD", url: "https://stream.radioparadise.com/mp3_128" },
-                { name: "Argentina Rock", url: "https://ice1.somafm.com/groovesalad-128-mp3" },
-                { name: "Global Classic", url: "https://media-ice.musicradio.com/ClassicFMMP3" },
-                { name: "Deep Tech World", url: "https://dancewave.online/dance.mp3" }
+            const STATIONS = [
+                { name: "Radio Paradise", url: "https://stream.radioparadise.com/mp3_128", tag: "GLOBAL" },
+                { name: "SomaFM Groove Salad", url: "https://ice1.somafm.com/groovesalad-128-mp3", tag: "AMBIENT" },
+                { name: "Dance Wave World", url: "https://dancewave.online/dance.mp3", tag: "DANCE" },
+                { name: "Classic FM London", url: "https://media-ice.musicradio.com/ClassicFMMP3", tag: "CLASSIC" }
             ];
 
             function renderStations() {
                 stationsContainer.innerHTML = '';
-                EMERGENCY_STATIONS.forEach(s => {
+                STATIONS.forEach(s => {
                     const item = document.createElement('div');
                     item.className = 'station-item';
-                    item.innerHTML = `<div class="station-name">${s.name}</div><div style="font-size:10px; opacity:0.5; margin-top:5px;">Sintonizar Señal Satélite</div>`;
+                    item.innerHTML = `<div class="station-name">${s.name}</div><div style="font-size:11px; opacity:0.4; margin-top:5px;">Sintonizando ${s.tag}...</div>`;
                     item.addEventListener('click', () => {
                         stationAudio.src = s.url;
                         stationLabel.textContent = s.name;
@@ -130,12 +127,12 @@
 
             function togglePlay() {
                 if (!isPlaying) {
-                    if (!stationAudio.src) stationAudio.src = EMERGENCY_STATIONS[0].url;
+                    if (!stationAudio.src) stationAudio.src = STATIONS[0].url;
                     stationAudio.play().then(() => {
                         isPlaying = true;
                         playBtn.textContent = '⏸';
                         animateBars();
-                    }).catch(() => { alert("Haz clic en Play para activar el sonido."); });
+                    }).catch(() => { alert("Pulsa Play para iniciar el audio."); });
                 } else {
                     stationAudio.pause();
                     isPlaying = false;
@@ -152,7 +149,7 @@
                 btnFM.classList.remove('active');
                 document.body.classList.add('theme-am');
                 document.documentElement.style.setProperty('--active-color', '#ff9d00');
-                document.documentElement.style.setProperty('--active-glow', 'rgba(255, 157, 0, 0.4)');
+                document.documentElement.style.setProperty('--active-glow', 'rgba(255, 157, 0, 0.5)');
                 freqDisplay.textContent = "840";
                 stationLabel.textContent = "AM ANALOG SIGNAL • 10KW";
             });
@@ -163,7 +160,7 @@
                 btnAM.classList.remove('active');
                 document.body.classList.remove('theme-am');
                 document.documentElement.style.setProperty('--active-color', '#00ff88');
-                document.documentElement.style.setProperty('--active-glow', 'rgba(0, 255, 136, 0.4)');
+                document.documentElement.style.setProperty('--active-glow', 'rgba(0, 255, 136, 0.5)');
                 freqDisplay.textContent = "104.5";
                 stationLabel.textContent = "FM STEREO • HIGH DEFINITION";
             });
@@ -171,7 +168,7 @@
             function animateBars() {
                 if (!isPlaying) return;
                 if (visualizer.innerHTML === '') {
-                    for (let i = 0; i < 20; i++) {
+                    for (let i = 0; i < 22; i++) {
                         const bar = document.createElement('div');
                         bar.className = 'bar';
                         bar.style.height = '10%';
@@ -179,7 +176,7 @@
                     }
                 }
                 visualizer.querySelectorAll('.bar').forEach(b => { 
-                    b.style.height = (Math.random() * 80 + 15) + '%'; 
+                    b.style.height = (Math.random() * 85 + 15) + '%'; 
                 });
                 setTimeout(() => requestAnimationFrame(animateBars), 100);
             }
