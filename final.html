@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radio Boyd | WORLD UNLOCKED EDITION</title>
+    <style>
+        :root {
+            --bg-dark: #050508;
+            --surface: rgba(255, 255, 255, 0.05);
+            --surface-border: rgba(255, 255, 255, 0.15);
+            --text-primary: #ffffff;
+            --active-color: #00ff88;
+            --active-glow: rgba(0, 255, 136, 0.4);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .glow-bg { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, var(--active-glow) 0%, transparent 40%); z-index: -1; transition: 0.8s; }
+        .app-container { width: 95vw; height: 90vh; max-height: 850px; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(50px); border: 2px solid var(--surface-border); border-radius: 40px; display: grid; grid-template-rows: auto 1fr auto; padding: 40px; box-shadow: 0 50px 150px rgba(0,0,0,1); overflow: hidden; }
+        header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 20px; border-bottom: 1px solid var(--surface-border); }
+        .main-logo { height: 180px; filter: drop-shadow(0 0 40px var(--active-glow)); transition: 0.5s; }
+        #select-country { background: rgba(255,255,255,0.1); border: 1px solid var(--surface-border); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 300px; font-family: 'Orbitron', sans-serif; cursor: pointer; }
+        
+        main { display: grid; grid-template-columns: 1fr 400px; gap: 40px; padding: 30px 0; overflow: hidden; }
+        .broadcast-panel { background: var(--surface); border-radius: 35px; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; border: 1px solid var(--surface-border); }
+        .station-toggle { position: absolute; top: 30px; left: 30px; display: flex; background: rgba(255,255,255,0.05); border-radius: 15px; padding: 5px; }
+        .toggle-btn { background: transparent; border: none; color: #555; padding: 12px 25px; cursor: pointer; border-radius: 10px; font-weight: 900; font-family: 'Orbitron'; }
+        .toggle-btn.active { background: var(--active-color); color: #000; box-shadow: 0 0 20px var(--active-glow); }
+        
+        .station-info h1 { font-size: 130px; color: var(--active-color); text-shadow: 0 0 40px var(--active-glow); text-align: center; font-family: 'Orbitron'; letter-spacing: -5px; }
+        .station-info span { display: block; text-align: center; font-size: 14px; color: #fff; opacity: 0.4; letter-spacing: 8px; text-transform: uppercase; }
+        
+        .ads-panel { background: var(--surface); border-radius: 35px; padding: 30px; overflow-y: auto; border: 1px solid var(--surface-border); }
+        .station-item { padding: 18px; background: rgba(255,255,255,0.05); border-radius: 15px; margin-bottom: 12px; cursor: pointer; border: 1px solid transparent; transition: 0.3s; }
+        .station-item:hover { border-color: var(--active-color); background: rgba(255,255,255,0.1); transform: scale(1.02); }
+        .station-name { font-weight: 800; font-size: 16px; color: var(--active-color); }
+        
+        .bars { display: flex; gap: 6px; align-items: flex-end; height: 130px; margin-top: 40px; }
+        .bar { width: 10px; background: var(--active-color); border-radius: 5px; box-shadow: 0 0 20px var(--active-glow); transition: height 0.15s ease-out; }
+        
+        footer { padding-top: 30px; border-top: 1px solid var(--surface-border); display: flex; justify-content: space-between; align-items: center; }
+        .control-btn { width: 90px; height: 90px; border-radius: 50%; background: var(--active-color); border: none; font-size: 36px; cursor: pointer; box-shadow: 0 0 40px var(--active-glow); display: flex; align-items: center; justify-content: center; }
+        .control-btn:hover { transform: scale(1.1); }
+        .status-msg { font-size: 11px; color: var(--active-color); font-weight: bold; letter-spacing: 2px; }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
+</head>
+<body class="theme-fm">
+    <div class="glow-bg"></div>
+    <div class="app-container">
+        <header>
+            <img src="assets/logo.png" class="main-logo" alt="Logo">
+            <div class="header-meta">
+                <select id="select-country"><option value="">Cargando Países...</option></select>
+                <div id="current-time" style="font-family: 'Orbitron'; font-size: 28px; color: var(--active-color);">00:00:00</div>
+            </div>
+        </header>
+        <main>
+            <section class="broadcast-panel">
+                <div class="station-toggle">
+                    <button id="btn-am" class="toggle-btn">AM</button>
+                    <button id="btn-fm" class="toggle-btn active">FM</button>
+                </div>
+                <div class="station-info">
+                    <h1 id="freq-display">104.5</h1>
+                    <span id="station-label">FM STEREO • HIGH FIDELITY</span>
+                </div>
+                <div class="bars" id="visualizer"></div>
+            </section>
+            <section class="ads-panel">
+                <h2 style="font-size: 14px; margin-bottom: 25px; letter-spacing: 3px; color: var(--active-color);">SINTONIZADOR MUNDIAL</h2>
+                <div id="stations-list"></div>
+            </section>
+        </main>
+        <footer>
+            <div style="display: flex; align-items: center; gap: 30px;">
+                <button id="play-btn" class="control-btn">▶</button>
+                <div>
+                    <b style="font-size: 22px;">RADIO BOYD</b><br>
+                    <span id="status-label" class="status-msg">LISTO PARA SINTONIZAR</span>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <span style="font-size: 14px; opacity: 0.6;">VOL</span>
+                <input type="range" id="volume-slider" min="0" max="100" value="80" style="width: 250px; accent-color: var(--active-color);">
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const playBtn = document.getElementById('play-btn');
+            const freqDisplay = document.getElementById('freq-display');
+            const stationLabel = document.getElementById('station-label');
+            const volSlider = document.getElementById('volume-slider');
+            const stationsContainer = document.getElementById('stations-list');
+            const visualizer = document.getElementById('visualizer');
+            const btnAM = document.getElementById('btn-am');
+            const btnFM = document.getElementById('btn-fm');
+            const countrySelect = document.getElementById('select-country');
+            const statusLabel = document.getElementById('status-label');
+
+            let isPlaying = false;
+            let isAM = false;
+            
+            // MOTOR DE AUDIO SIMPLIFICADO (SIN CORS)
+            const stationAudio = new Audio();
+            // NO USAMOS crossOrigin PARA EVITAR BLOQUEOS
+            
+            const FALLBACK = [
+                { name: "Sintonía de Satélite 1", url: "https://stream.radioparadise.com/mp3_128" },
+                { name: "Sintonía de Satélite 2", url: "https://ice1.somafm.com/groovesalad-128-mp3" }
+            ];
+
+            function renderStations(stations) {
+                stationsContainer.innerHTML = '';
+                stations.forEach(s => {
+                    const item = document.createElement('div');
+                    item.className = 'station-item';
+                    item.innerHTML = `<div class="station-name">${s.name}</div><div style="font-size:10px; opacity:0.4; margin-top:5px;">Sintonizar Señal...</div>`;
+                    item.addEventListener('click', () => {
+                        const url = s.url_resolved || s.url;
+                        statusLabel.textContent = "CONECTANDO...";
+                        statusLabel.style.color = "#ffa600";
+                        
+                        stationAudio.src = url;
+                        stationLabel.textContent = s.name;
+                        freqDisplay.textContent = "LIVE";
+                        
+                        stationAudio.play().then(() => {
+                            isPlaying = true;
+                            playBtn.textContent = '⏸';
+                            statusLabel.textContent = "AL AIRE • SEÑAL OK";
+                            statusLabel.style.color = "#00ff88";
+                            animateBars();
+                        }).catch(() => {
+                            statusLabel.textContent = "ERROR: PRUEBA OTRA";
+                            statusLabel.style.color = "#ff4444";
+                        });
+                    });
+                    stationsContainer.appendChild(item);
+                });
+            }
+
+            function togglePlay() {
+                if (!isPlaying) {
+                    if (!stationAudio.src) stationAudio.src = FALLBACK[0].url;
+                    stationAudio.play().then(() => {
+                        isPlaying = true;
+                        playBtn.textContent = '⏸';
+                        statusLabel.textContent = "AL AIRE • SEÑAL OK";
+                        animateBars();
+                    }).catch(() => { alert("Pulsa Play para activar el sonido."); });
+                } else {
+                    stationAudio.pause();
+                    isPlaying = false;
+                    playBtn.textContent = '▶';
+                    statusLabel.textContent = "PAUSADO";
+                }
+            }
+
+            playBtn.addEventListener('click', togglePlay);
+            volSlider.addEventListener('input', () => { stationAudio.volume = volSlider.value / 100; });
+
+            btnAM.addEventListener('click', () => {
+                isAM = true;
+                btnAM.classList.add('active'); btnFM.classList.remove('active');
+                document.documentElement.style.setProperty('--active-color', '#ff9d00');
+                document.documentElement.style.setProperty('--active-glow', 'rgba(255, 157, 0, 0.5)');
+                freqDisplay.textContent = "840";
+                stationLabel.textContent = "AM ANALOG SIGNAL";
+            });
+
+            btnFM.addEventListener('click', () => {
+                isAM = false;
+                btnFM.classList.add('active'); btnAM.classList.remove('active');
+                document.documentElement.style.setProperty('--active-color', '#00ff88');
+                document.documentElement.style.setProperty('--active-glow', 'rgba(0, 255, 136, 0.5)');
+                freqDisplay.textContent = "104.5";
+                stationLabel.textContent = "FM STEREO HD";
+            });
+
+            // CARGAR PAÍSES (MIRROR ESTABLE)
+            fetch('https://de1.api.radio-browser.info/json/countries?order=name')
+            .then(r => r.json())
+            .then(countries => {
+                countrySelect.innerHTML = '<option value="">Selecciona un País</option>';
+                countries.forEach(c => {
+                    if (c.name && c.stationcount > 5) {
+                        const opt = document.createElement('option');
+                        opt.value = c.iso_3166_1 || c.name;
+                        opt.textContent = `${c.name} (${c.stationcount})`;
+                        countrySelect.appendChild(opt);
+                    }
+                });
+            });
+
+            countrySelect.addEventListener('change', (e) => {
+                const country = e.target.value;
+                if (!country) return;
+                stationsContainer.innerHTML = '<p style="padding:20px; opacity:0.5;">Sintonizando el mundo...</p>';
+                fetch(`https://de1.api.radio-browser.info/json/stations/bycountryexact/${encodeURIComponent(country)}?limit=50&hidebroken=true&order=clickcount&reverse=true`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.length > 0) renderStations(data);
+                    else renderStations(FALLBACK);
+                });
+            });
+
+            // VISUALIZADOR FALSO (PARA EVITAR BLOQUEOS DE CORS)
+            function animateBars() {
+                if (!isPlaying) return;
+                if (visualizer.innerHTML === '') {
+                    for (let i = 0; i < 22; i++) {
+                        const bar = document.createElement('div');
+                        bar.className = 'bar';
+                        bar.style.height = '10%';
+                        visualizer.appendChild(bar);
+                    }
+                }
+                visualizer.querySelectorAll('.bar').forEach(b => { 
+                    b.style.height = (Math.random() * 85 + 15) + '%'; 
+                });
+                setTimeout(() => requestAnimationFrame(animateBars), 100);
+            }
+
+            renderStations(FALLBACK);
+            setInterval(() => { document.getElementById('current-time').textContent = new Date().toLocaleTimeString(); }, 1000);
+        });
+    </script>
+</body>
+</html>
