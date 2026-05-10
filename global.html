@@ -3,28 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Boyd | GLOBAL BROADCAST VERSION</title>
+    <title>Radio Boyd | WORLD BROADCAST EDITION</title>
     <style>
         :root {
             --bg-dark: #050508;
             --surface: rgba(255, 255, 255, 0.03);
             --surface-border: rgba(255, 255, 255, 0.15);
             --text-primary: #ffffff;
-            --fm-color: #00ff88;
-            --fm-glow: rgba(0, 255, 136, 0.4);
+            --active-color: #00ff88;
+            --active-glow: rgba(0, 255, 136, 0.4);
             --am-color: #ff9d00;
             --am-glow: rgba(255, 157, 0, 0.4);
-            --active-color: var(--fm-color);
-            --active-glow: var(--fm-glow);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg-dark); color: var(--text-primary); font-family: 'Inter', sans-serif; height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
         .glow-bg { position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, var(--active-glow) 0%, transparent 40%); z-index: -1; transition: 0.8s; }
         .app-container { width: 95vw; height: 90vh; max-height: 850px; background: rgba(10, 10, 15, 0.9); backdrop-filter: blur(40px); border: 2px solid var(--surface-border); border-radius: 40px; display: grid; grid-template-rows: auto 1fr auto; padding: 40px; box-shadow: 0 50px 150px rgba(0,0,0,1); overflow: hidden; }
         header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 30px; border-bottom: 1px solid var(--surface-border); }
-        .main-logo { height: 160px; filter: drop-shadow(0 0 40px var(--active-glow)); transition: 0.5s; }
+        .main-logo { height: 180px; filter: drop-shadow(0 0 40px var(--active-glow)); transition: 0.5s; }
         .header-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 15px; }
-        #select-country { background: rgba(255,255,255,0.08); border: 1px solid var(--surface-border); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 250px; font-family: 'Orbitron', sans-serif; cursor: pointer; font-size: 14px; }
+        #select-country { background: rgba(255,255,255,0.08); border: 1px solid var(--surface-border); color: #fff; padding: 12px 20px; border-radius: 12px; font-weight: bold; width: 280px; font-family: 'Orbitron', sans-serif; cursor: pointer; font-size: 14px; }
         #select-country option { background: #111; color: #fff; }
         
         main { display: grid; grid-template-columns: 1fr 400px; gap: 40px; padding: 30px 0; overflow: hidden; }
@@ -55,14 +53,7 @@
         <header>
             <img src="assets/logo.png" class="main-logo" alt="Logo">
             <div class="header-meta">
-                <select id="select-country">
-                    <option value="">Seleccionar País</option>
-                    <option value="ES">España</option>
-                    <option value="MX">México</option>
-                    <option value="AR">Argentina</option>
-                    <option value="CO">Colombia</option>
-                    <option value="US">USA</option>
-                </select>
+                <select id="select-country"><option value="">Cargando Sintonizador Global...</option></select>
                 <div id="current-time" style="font-family: 'Orbitron'; font-size: 28px; color: var(--active-color);">00:00:00</div>
             </div>
         </header>
@@ -79,14 +70,14 @@
                 <div class="bars" id="visualizer"></div>
             </section>
             <section class="ads-panel">
-                <h2 style="font-size: 14px; margin-bottom: 25px; letter-spacing: 3px; color: var(--active-color);">ESTACIONES DISPONIBLES</h2>
+                <h2 style="font-size: 14px; margin-bottom: 25px; letter-spacing: 3px; color: var(--active-color);">EMISORAS DETECTADAS</h2>
                 <div id="stations-list"></div>
             </section>
         </main>
         <footer>
             <div style="display: flex; align-items: center; gap: 30px;">
                 <button id="play-btn" class="control-btn">▶</button>
-                <div><b style="font-size: 24px;">RADIO BOYD</b><br><span style="font-size: 12px; opacity: 0.5; letter-spacing: 2px;">GLOBAL BROADCASTING</span></div>
+                <div><b style="font-size: 24px;">RADIO BOYD</b><br><span style="font-size: 12px; opacity: 0.5; letter-spacing: 2px;">WORLDWIDE BROADCASTING</span></div>
             </div>
             <div style="display: flex; align-items: center; gap: 20px;">
                 <span style="font-size: 14px; opacity: 0.6;">VOL</span>
@@ -123,7 +114,7 @@
                 list.forEach(s => {
                     const item = document.createElement('div');
                     item.className = 'station-item';
-                    item.innerHTML = `<div class="station-name">${s.name}</div><div style="font-size:11px; opacity:0.4; margin-top:5px;">Sintonizando Señal...</div>`;
+                    item.innerHTML = `<div class="station-name">${s.name}</div><div style="font-size:11px; opacity:0.4; margin-top:5px;">${s.tags || 'General'}</div>`;
                     item.addEventListener('click', () => {
                         stationAudio.src = s.url_resolved || s.url;
                         stationLabel.textContent = s.name;
@@ -173,11 +164,29 @@
                 stationLabel.textContent = "FM STEREO HD";
             });
 
+            // CARGAR TODOS LOS PAÍSES DEL MUNDO
+            fetch('https://de1.api.radio-browser.info/json/countries?order=name')
+            .then(r => r.json())
+            .then(countries => {
+                countrySelect.innerHTML = '<option value="">Selecciona un País</option>';
+                countries.forEach(c => {
+                    if (c.name) {
+                        const opt = document.createElement('option');
+                        opt.value = c.iso_3166_1 || c.name;
+                        opt.textContent = `${c.name} (${c.stationcount})`;
+                        countrySelect.appendChild(opt);
+                    }
+                });
+            })
+            .catch(() => {
+                countrySelect.innerHTML = '<option value="">Error de Conexión</option>';
+            });
+
             countrySelect.addEventListener('change', (e) => {
                 const country = e.target.value;
                 if (!country) return;
-                stationsContainer.innerHTML = '<p style="padding:20px; opacity:0.5;">Buscando emisoras...</p>';
-                fetch(`https://all.api.radio-browser.info/json/stations/bycountryexact/${country}?limit=30&hidebroken=true&order=clickcount&reverse=true`)
+                stationsContainer.innerHTML = '<p style="padding:20px; opacity:0.5;">Sintonizando el mundo...</p>';
+                fetch(`https://de1.api.radio-browser.info/json/stations/bycountryexact/${encodeURIComponent(country)}?limit=50&hidebroken=true&order=clickcount&reverse=true`)
                 .then(r => r.json())
                 .then(data => {
                     if (data && data.length > 0) renderStations(data);
