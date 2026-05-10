@@ -82,34 +82,57 @@ document.addEventListener('DOMContentLoaded', () => {
         noiseNode.connect(noiseGain);
         noiseGain.connect(audioContext.destination);
         noiseNode.start();
+
+        // Start Visualizer Bars
+        initBars();
+    }
+
+    function initBars() {
+        if (!visualizer) return;
+        visualizer.innerHTML = '';
+        for (let i = 0; i < 30; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'bar';
+            bar.style.height = '10%';
+            visualizer.appendChild(bar);
+        }
+        animateBars();
+    }
+
+    function animateBars() {
+        if (!isPlaying) return;
+        const bars = document.querySelectorAll('.bar');
+        bars.forEach(bar => {
+            const height = Math.random() * 80 + 10;
+            bar.style.height = `${height}%`;
+        });
+        requestAnimationFrame(() => setTimeout(animateBars, 100));
     }
 
     function updateFrequency() {
         if (stationInfo) stationInfo.classList.add('changing');
         setTimeout(() => {
-            const freq = isAM ? currentFreqAM : currentFreqFM.toFixed(1);
-            if (freqDisplay) freqDisplay.textContent = freq;
+            const freqStr = isAM ? currentFreqAM.toString() : currentFreqFM.toFixed(1);
+            if (freqDisplay) freqDisplay.textContent = freqStr;
             
             if (isAM) {
-                if (stationLabel) stationLabel.textContent = STATIONS.AM[currentFreqAM] ? 'AM BAND • ANALOG SIGNAL' : 'AM • NO SIGNAL';
+                if (stationLabel) stationLabel.textContent = STATIONS.AM[freqStr] ? 'AM BAND • ANALOG SIGNAL' : 'AM • NO SIGNAL';
                 document.body.classList.add('theme-am');
                 document.querySelector('.app-container').classList.add('am-filter');
             } else {
-                if (stationLabel) stationLabel.textContent = STATIONS.FM[currentFreqFM.toFixed(1)] ? 'FM STEREO • HIGH FIDELITY' : 'FM • NO SIGNAL';
+                if (stationLabel) stationLabel.textContent = STATIONS.FM[freqStr] ? 'FM STEREO • HIGH FIDELITY' : 'FM • NO SIGNAL';
                 document.body.classList.remove('theme-am');
                 document.querySelector('.app-container').classList.remove('am-filter');
             }
 
-            const streamUrl = isAM ? STATIONS.AM[currentFreqAM] : STATIONS.FM[currentFreqFM.toFixed(1)];
+            const streamUrl = isAM ? STATIONS.AM[freqStr] : STATIONS.FM[freqStr];
             if (streamUrl) {
-                if (stationAudio.src !== streamUrl) {
-                    stationAudio.src = streamUrl;
-                    if (isPlaying) stationAudio.play().catch(console.error);
-                }
-                if (noiseGain) noiseGain.gain.setTargetAtTime(isAM ? 0.05 : 0, audioContext.currentTime, 0.1);
+                stationAudio.src = streamUrl;
+                if (isPlaying) stationAudio.play().catch(err => console.log("Audio blocked by browser, click play again."));
+                if (noiseGain) noiseGain.gain.setTargetAtTime(isAM ? 0.02 : 0, audioContext.currentTime, 0.1);
             } else {
                 stationAudio.pause();
-                if (noiseGain && isPlaying) noiseGain.gain.setTargetAtTime(isAM ? 0.5 : 0.2, audioContext.currentTime, 0.1);
+                if (noiseGain && isPlaying) noiseGain.gain.setTargetAtTime(isAM ? 0.4 : 0.1, audioContext.currentTime, 0.1);
             }
             if (stationInfo) stationInfo.classList.remove('changing');
         }, 100);
@@ -129,32 +152,32 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFrequency();
     });
 
-    dialNext.addEventListener('click', () => {
+    if (dialNext) dialNext.addEventListener('click', () => {
         if (isAM) currentFreqAM += 10; else currentFreqFM += 0.1;
         updateFrequency();
     });
 
-    dialPrev.addEventListener('click', () => {
+    if (dialPrev) dialPrev.addEventListener('click', () => {
         if (isAM) currentFreqAM -= 10; else currentFreqFM -= 0.1;
         updateFrequency();
     });
 
-    playBtn.addEventListener('click', () => {
+    if (playBtn) playBtn.addEventListener('click', () => {
         initAudio();
         isPlaying = !isPlaying;
         playBtn.textContent = isPlaying ? '⏸' : '▶';
         if (isPlaying) {
             audioContext.resume();
             updateFrequency();
+            animateBars();
         } else {
             stationAudio.pause();
             if (noiseGain) noiseGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.1);
         }
     });
 
-    volSlider.addEventListener('input', () => {
-        const val = volSlider.value / 100;
-        stationAudio.volume = val;
+    if (volSlider) volSlider.addEventListener('input', () => {
+        stationAudio.volume = volSlider.value / 100;
     });
 
     if (volUp) volUp.addEventListener('click', () => {
@@ -167,42 +190,45 @@ document.addEventListener('DOMContentLoaded', () => {
         stationAudio.volume = volSlider.value / 100;
     });
 
-    // Global Radio Integration
+    // Global Radio Integration (Using a better mirror)
     async function fetchCountries() {
         try {
-            const response = await fetch('https://de1.api.radio-browser.info/json/countries?order=name');
+            const response = await fetch('https://all.api.radio-browser.info/json/countries?order=name');
             const countries = await response.json();
-            countrySelect.innerHTML = '<option value="">Selecciona País</option>';
-            countries.forEach(c => {
-                if (c.name) {
-                    const opt = document.createElement('option');
-                    opt.value = c.iso_3166_1 || c.name;
-                    opt.textContent = `${c.name} (${c.stationcount})`;
-                    countrySelect.appendChild(opt);
-                }
-            });
+            if (countrySelect) {
+                countrySelect.innerHTML = '<option value="">Selecciona País</option>';
+                countries.forEach(c => {
+                    if (c.name) {
+                        const opt = document.createElement('option');
+                        opt.value = c.iso_3166_1 || c.name;
+                        opt.textContent = `${c.name} (${c.stationcount})`;
+                        countrySelect.appendChild(opt);
+                    }
+                });
+            }
         } catch (err) {
-            console.error('Error:', err);
+            console.error('API Error:', err);
         }
     }
 
     async function fetchStations(country) {
-        stationsContainer.innerHTML = '<p class="placeholder-text">Cargando emisoras...</p>';
+        if (stationsContainer) stationsContainer.innerHTML = '<p class="placeholder-text">Cargando emisoras...</p>';
         try {
-            const response = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountryexact/${encodeURIComponent(country)}?limit=100&hidebroken=true&order=clickcount&reverse=true`);
+            const response = await fetch(`https://all.api.radio-browser.info/json/stations/bycountryexact/${encodeURIComponent(country)}?limit=50&hidebroken=true&order=clickcount&reverse=true`);
             stationsList = await response.json();
             renderStations();
         } catch (err) {
-            stationsContainer.innerHTML = '<p class="placeholder-text">Error al cargar</p>';
+            if (stationsContainer) stationsContainer.innerHTML = '<p class="placeholder-text">Error al conectar.</p>';
         }
     }
 
     function renderStations() {
+        if (!stationsContainer) return;
         stationsContainer.innerHTML = '';
         stationsList.forEach((s, index) => {
             const item = document.createElement('div');
             item.className = 'station-item';
-            item.innerHTML = `<div class="station-name">${s.name}</div><div class="station-tags">${s.tags || 'Radio'}</div>`;
+            item.innerHTML = `<div class="station-name">${s.name}</div><div class="station-tags">${s.tags || 'General'}</div>`;
             item.addEventListener('click', () => {
                 initAudio();
                 currentStationIndex = index;
@@ -211,14 +237,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 playBtn.textContent = '⏸';
                 stationLabel.textContent = s.name;
                 freqDisplay.textContent = 'WEB';
-                stationAudio.play().catch(console.error);
+                stationAudio.play().catch(err => console.log("Audio play blocked."));
                 if (noiseGain) noiseGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.1);
+                animateBars();
             });
             stationsContainer.appendChild(item);
         });
     }
 
-    countrySelect.addEventListener('change', (e) => {
+    if (countrySelect) countrySelect.addEventListener('change', (e) => {
         if (e.target.value) fetchStations(e.target.value);
     });
 
@@ -226,21 +253,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clock
     setInterval(() => {
-        timeDisplay.textContent = new Date().toLocaleTimeString('es-ES', { hour12: false });
+        if (timeDisplay) timeDisplay.textContent = new Date().toLocaleTimeString('es-ES', { hour12: false });
     }, 1000);
 
-    // Initial Platform Setup
-    document.body.className = `theme-${platform}`;
-    const PLATFORM_ADS = {
-        ms: [{ title: "Microsoft Store", desc: "Elite Apps Suite", time: "NOW", type: "ms-style" }],
-        hw: [{ title: "Huawei Gallery", desc: "Premium Mobile Experience", time: "NOW", type: "hw-style" }]
-    };
-    
-    adsContainer.innerHTML = '';
-    PLATFORM_ADS[platform].forEach(ad => {
+    // Initial Ads
+    if (adsContainer) {
+        adsContainer.innerHTML = '';
         const card = document.createElement('div');
-        card.className = `ad-card ${ad.type}`;
-        card.innerHTML = `<div class="ad-info"><h3>${ad.title}</h3><p>${ad.desc}</p></div><div class="ad-stats"><span class="time">${ad.time}</span></div>`;
+        card.className = `ad-card ms-style`;
+        card.innerHTML = `<div class="ad-info"><h3>Radio Boyd Pro</h3><p>Estaciones Globales en Alta Definición</p></div><div class="ad-stats"><span class="time">LIVE</span></div>`;
         adsContainer.appendChild(card);
-    });
+    }
 });
