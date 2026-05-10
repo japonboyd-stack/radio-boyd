@@ -1,0 +1,26 @@
+{
+  "name": "radio-boyd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/japonboyd-stack/radio-boyd.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/japonboyd-stack/radio-boyd/issues"
+  },
+  "homepage": "https://github.com/japonboyd-stack/radio-boyd#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.3.3",
+    "@capacitor/cli": "^8.3.3",
+    "@capacitor/core": "^8.3.3"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "name": "Radio Boyd Global",
+  "short_name": "Radio Boyd",
+  "description": "Tu radio global con estética premium cyberpunk.",
+  "start_url": "/radio-boyd/",
+  "display": "standalone",
+  "background_color": "#050508",
+  "theme_color": "#00f2ff",
+  "icons": [
+    {
+      "src": "assets/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
