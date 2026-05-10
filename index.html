@@ -17,9 +17,11 @@
             navigator.serviceWorker.register('service-worker.js');
         }
     </script>
+    <script>window.PLATFORM = 'hw';</script>
 </head>
 <body class="theme-fm">
     <div class="glow-bg"></div>
+    <div class="crackling-noise"></div>
     
     <div class="app-container">
         <header>
@@ -36,10 +38,7 @@
                         <option value="">Cargando países...</option>
                     </select>
                 </div>
-                <div class="platform-switch">
-                    <button id="mode-ms" class="mode-btn active">Microsoft Edition</button>
-                    <button id="mode-hw" class="mode-btn">Huawei Edition</button>
-                </div>
+
                 <div class="meta-info">
                     <span class="status-indicator">● LIVE</span>
                     <span id="current-time">00:00:00</span>

@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">Radio Boyd</string>
-    <string name="title_activity_main">Radio Boyd</string>
-    <string name="package_name">com.radioboyd.app</string>
-    <string name="custom_url_scheme">com.radioboyd.app</string>
-</resources>
