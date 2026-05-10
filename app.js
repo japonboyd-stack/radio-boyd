@@ -157,6 +157,16 @@ document.addEventListener('DOMContentLoaded', () => {
         stationAudio.volume = val;
     });
 
+    if (volUp) volUp.addEventListener('click', () => {
+        volSlider.value = Math.min(100, parseInt(volSlider.value) + 5);
+        stationAudio.volume = volSlider.value / 100;
+    });
+
+    if (volDown) volDown.addEventListener('click', () => {
+        volSlider.value = Math.max(0, parseInt(volSlider.value) - 5);
+        stationAudio.volume = volSlider.value / 100;
+    });
+
     // Global Radio Integration
     async function fetchCountries() {
         try {
